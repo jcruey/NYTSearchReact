@@ -57,7 +57,7 @@ var Search = React.createClass({
 		console.log(this.state.startYear);
 		console.log(this.state.endYear);
 		
-
+	//sends the search parameters to the parent
 		this.props.setTerm({
 			searchTerm: this.state.searchTerm,
 			startYear: this.state.startYear,
@@ -86,14 +86,14 @@ var Search = React.createClass({
 								*/}
 								<input type="text" className="form-control text-center" id="searchTerm" onChange= {this.handleChangeTerm} required/>
 								<br />
-								<h4 className=""><strong>Start Year</strong></h4>
+								<h4 className=""><strong>Start Date (YYYYMMDD)</strong></h4>
 
 								{/*Note how each of the form elements has an id that matches the state. This is not necessary but it is convenient.
 									Also note how each has an onChange event associated with our handleChange event. 
 								*/}
 								<input type="text" className="form-control text-center" id="startYear" onChange= {this.handleChangeStartYear} required/>
 								<br />
-								<h4 className=""><strong>End Year</strong></h4>
+								<h4 className=""><strong>End Date (YYYYMMDD)</strong></h4>
 
 								{/*Note how each of the form elements has an id that matches the state. This is not necessary but it is convenient.
 									Also note how each has an onChange event associated with our handleChange event. 

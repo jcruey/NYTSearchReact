@@ -10,8 +10,6 @@ var helpers = {
 	// This function serves our purpose of running the query to searchNYT. 
 	runQuery: function(searchTerm, startYear, endYear){
 
-		console.log(searchTerm);
-
 		//Figure out the geolocation
 
 		var authKey = "8f2a45ea5128489a94834b44f4c7ec93"
@@ -19,9 +17,16 @@ var helpers = {
 		console.log(queryURL);
 		return axios.get(queryURL)
 			.then(function(response){
-
 				console.log(response);
-				return response.data.results[0].formatted;
+				var results =[];
+				for (var i = 0; i < response.data.response.docs.length; i++) {
+					results.push({
+						Title: response.data.response.docs[i].headline.main, 
+						pubDate: response.data.response.docs[i].pub_date, 
+						url: response.data.response.docs[i].web_url
+					})
+				}
+				console.log(results);
 		})
 
 	},

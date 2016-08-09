@@ -37,7 +37,7 @@ var Main = React.createClass({
 
 		if(prevState.searchTerm != this.state.searchTerm){
 			console.log("UPDATED");
-			
+			console.log()
 			// Run the query for the address
 			helpers.runQuery(this.state.searchTerm, this.state.startYear, this.state.endYear)
 				.then(function(data){
@@ -50,7 +50,7 @@ var Main = React.createClass({
 						})
 
 						// After we've received the result... then post the search term to our history. 
-						helpers.postHistory(this.state.searchTerm)
+						helpers.postHistory(this.state.results)
 							.then(function(data){
 								console.log("Updated!");
 

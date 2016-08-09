@@ -19777,7 +19777,7 @@
 
 			if (prevState.searchTerm != this.state.searchTerm) {
 				console.log("UPDATED");
-
+				console.log();
 				// Run the query for the address
 				helpers.runQuery(this.state.searchTerm, this.state.startYear, this.state.endYear).then(function (data) {
 					if (data != this.state.results) {
@@ -19788,7 +19788,7 @@
 						});
 
 						// After we've received the result... then post the search term to our history. 
-						helpers.postHistory(this.state.searchTerm).then(function (data) {
+						helpers.postHistory(this.state.results).then(function (data) {
 							console.log("Updated!");
 
 							// After we've done the post... then get the updated history
@@ -19945,6 +19945,7 @@
 			console.log(this.state.startYear);
 			console.log(this.state.endYear);
 
+			//sends the search parameters to the parent
 			this.props.setTerm({
 				searchTerm: this.state.searchTerm,
 				startYear: this.state.startYear,
@@ -19993,7 +19994,7 @@
 								React.createElement(
 									"strong",
 									null,
-									"Start Year"
+									"Start Date (YYYYMMDD)"
 								)
 							),
 							React.createElement("input", { type: "text", className: "form-control text-center", id: "startYear", onChange: this.handleChangeStartYear, required: true }),
@@ -20004,7 +20005,7 @@
 								React.createElement(
 									"strong",
 									null,
-									"End Year"
+									"End Date (YYYYMMDD)"
 								)
 							),
 							React.createElement("input", { type: "text", className: "form-control text-center", id: "endYear", onChange: this.handleChangeEndYear, required: true }),
@@ -20133,17 +20134,22 @@
 		// This function serves our purpose of running the query to searchNYT. 
 		runQuery: function runQuery(searchTerm, startYear, endYear) {
 
-			console.log(searchTerm);
-
 			//Figure out the geolocation
 
 			var authKey = "8f2a45ea5128489a94834b44f4c7ec93";
 			var queryURL = "https://api.nytimes.com/svc/search/v2/articlesearch.json?q=" + searchTerm.searchTerm + "&begin_date=" + searchTerm.startYear + "&end_date=" + searchTerm.endYear + "&api-key=" + authKey;
 			console.log(queryURL);
 			return axios.get(queryURL).then(function (response) {
-
 				console.log(response);
-				return response.data.results[0].formatted;
+				var results = [];
+				for (var i = 0; i < response.data.response.docs.length; i++) {
+					results.push({
+						Title: response.data.response.docs[i].headline.main,
+						pubDate: response.data.response.docs[i].pub_date,
+						url: response.data.response.docs[i].web_url
+					});
+				}
+				console.log(results);
 			});
 		},
 
