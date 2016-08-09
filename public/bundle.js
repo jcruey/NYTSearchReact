@@ -19756,15 +19756,19 @@
 		getInitialState: function getInitialState() {
 			return {
 				searchTerm: "",
+				startYear: "",
+				endYear: "",
 				results: "",
 				saved: [] /*Note how we added in this history state variable*/
 			};
 		},
 
 		// This function allows childrens to update the parent.
-		setTerm: function setTerm(term) {
+		setTerm: function setTerm(term, startYear, endYear) {
 			this.setState({
-				searchTerm: term
+				searchTerm: term,
+				startYear: startYear,
+				endYear: endYear
 			});
 		},
 
@@ -19790,7 +19794,7 @@
 							// After we've done the post... then get the updated history
 							helpers.getHistory().then(function (response) {
 								console.log("Saved Articles", response.data);
-								if (response != this.state.history) {
+								if (response != this.state.saved) {
 									console.log("Saved", response.data);
 
 									this.setState({
@@ -19809,7 +19813,7 @@
 
 			// Get the latest history.
 			helpers.getHistory().then(function (response) {
-				if (response != this.state.history) {
+				if (response != this.state.saved) {
 					console.log("Saved", response.data);
 
 					this.setState({
@@ -19914,9 +19918,13 @@
 
 			console.log("CLICK");
 			console.log(this.state.term);
+			console.log(this.state.startYear);
+			console.log(this.state.endYear);
 
 			// Set the parent to have the search term
 			this.props.setTerm(this.state.term);
+			this.props.setTerm(this.state.startYear);
+			this.props.setTerm(this.state.endYear);
 		},
 
 		// Here we render the function
@@ -20091,20 +20099,22 @@
 	// Include the axios package for performing HTTP requests (promise based alternative to request)
 	var axios = __webpack_require__(164);
 
-	// Geocoder API
-	var geocodeAPI = "35e5548c618555b1a43eb4759d26b260";
+	// NYTimes API
+	var authKey = "8f2a45ea5128489a94834b44f4c7ec93";
 
 	// Helper Functions (in this case the only one is runQuery)
 	var helpers = {
 
 		// This function serves our purpose of running the query to geolocate. 
-		runQuery: function runQuery(location) {
+		runQuery: function runQuery(searchTerm, startYear, endYear) {
 
-			console.log(location);
+			console.log(searchTerm);
 
 			//Figure out the geolocation
-			var queryURL = "http://api.opencagedata.com/geocode/v1/json?query=" + location + "&pretty=1&key=" + geocodeAPI;
 
+			var authKey = "8f2a45ea5128489a94834b44f4c7ec93";
+			var queryURL = "https://api.nytimes.com/svc/search/v2/articlesearch.json?q=" + searchTerm + "&begin_date=" + startYear + "&end_date=" + endYear + "&api-key=" + authKey;
+			console.log(queryURL);
 			return axios.get(queryURL).then(function (response) {
 
 				console.log(response);

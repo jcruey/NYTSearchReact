@@ -1,20 +1,22 @@
 // Include the axios package for performing HTTP requests (promise based alternative to request)
 var axios = require('axios');
 
-// Geocoder API
-var geocodeAPI = "35e5548c618555b1a43eb4759d26b260";
+// NYTimes API
+var authKey = "8f2a45ea5128489a94834b44f4c7ec93"
 
 // Helper Functions (in this case the only one is runQuery)
 var helpers = {
 
 	// This function serves our purpose of running the query to geolocate. 
-	runQuery: function(location){
+	runQuery: function(searchTerm, startYear, endYear){
 
-		console.log(location);
+		console.log(searchTerm);
 
 		//Figure out the geolocation
-		var queryURL = "http://api.opencagedata.com/geocode/v1/json?query=" + location + "&pretty=1&key=" + geocodeAPI;
 
+		var authKey = "8f2a45ea5128489a94834b44f4c7ec93"
+		var queryURL = "https://api.nytimes.com/svc/search/v2/articlesearch.json?q=" + searchTerm + "&begin_date=" + startYear + "&end_date=" + endYear + "&api-key=" + authKey;
+		console.log(queryURL);
 		return axios.get(queryURL)
 			.then(function(response){
 
