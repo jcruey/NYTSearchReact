@@ -7,7 +7,7 @@ var authKey = "8f2a45ea5128489a94834b44f4c7ec93"
 // Helper Functions (in this case the only one is runQuery)
 var helpers = {
 
-	// This function serves our purpose of running the query to geolocate. 
+	// This function serves our purpose of running the query to searchNYT. 
 	runQuery: function(searchTerm, startYear, endYear){
 
 		console.log(searchTerm);
@@ -15,7 +15,7 @@ var helpers = {
 		//Figure out the geolocation
 
 		var authKey = "8f2a45ea5128489a94834b44f4c7ec93"
-		var queryURL = "https://api.nytimes.com/svc/search/v2/articlesearch.json?q=" + searchTerm + "&begin_date=" + startYear + "&end_date=" + endYear + "&api-key=" + authKey;
+		var queryURL = "https://api.nytimes.com/svc/search/v2/articlesearch.json?q=" + searchTerm.searchTerm + "&begin_date=" + searchTerm.startYear + "&end_date=" + searchTerm.endYear + "&api-key=" + authKey;
 		console.log(queryURL);
 		return axios.get(queryURL)
 			.then(function(response){

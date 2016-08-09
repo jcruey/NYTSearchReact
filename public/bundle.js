@@ -19764,9 +19764,9 @@
 		},
 
 		// This function allows childrens to update the parent.
-		setTerm: function setTerm(term, startYear, endYear) {
+		setTerm: function setTerm(searchTerm, startYear, endYear) {
 			this.setState({
-				searchTerm: term,
+				searchTerm: searchTerm,
 				startYear: startYear,
 				endYear: endYear
 			});
@@ -19779,7 +19779,7 @@
 				console.log("UPDATED");
 
 				// Run the query for the address
-				helpers.runQuery(this.state.searchTerm).then(function (data) {
+				helpers.runQuery(this.state.searchTerm, this.state.startYear, this.state.endYear).then(function (data) {
 					if (data != this.state.results) {
 						console.log("Results", data);
 
@@ -19898,12 +19898,36 @@
 		// Here we set a generic state associated with the text being searched for
 		getInitialState: function getInitialState() {
 			return {
-				term: ""
+				searchTerm: "",
+				startYear: "",
+				endYear: ""
 			};
 		},
 
 		// This function will respond to the user input 
-		handleChange: function handleChange(event) {
+		handleChangeTerm: function handleChangeTerm(event) {
+
+			// Here we create syntax to capture any change in text to the query terms (pre-search).
+			// See this Stack Overflow answer for more details: 
+			// http://stackoverflow.com/questions/21029999/react-js-identifying-different-inputs-with-one-onchange-handler
+			var newState = {};
+			newState[event.target.id] = event.target.value;
+			this.setState(newState);
+		},
+
+		// This function will respond to the user input 
+		handleChangeStartYear: function handleChangeStartYear(event) {
+
+			// Here we create syntax to capture any change in text to the query terms (pre-search).
+			// See this Stack Overflow answer for more details: 
+			// http://stackoverflow.com/questions/21029999/react-js-identifying-different-inputs-with-one-onchange-handler
+			var newState = {};
+			newState[event.target.id] = event.target.value;
+			this.setState(newState);
+		},
+
+		// This function will respond to the user input 
+		handleChangeEndYear: function handleChangeEndYear(event) {
 
 			// Here we create syntax to capture any change in text to the query terms (pre-search).
 			// See this Stack Overflow answer for more details: 
@@ -19914,17 +19938,18 @@
 		},
 
 		// When a user submits... 
-		handleClick: function handleClick() {
+		handleClick: function handleClick(e) {
 
 			console.log("CLICK");
-			console.log(this.state.term);
+			console.log(this.state.searchTerm);
 			console.log(this.state.startYear);
 			console.log(this.state.endYear);
 
-			// Set the parent to have the search term
-			this.props.setTerm(this.state.term);
-			this.props.setTerm(this.state.startYear);
-			this.props.setTerm(this.state.endYear);
+			this.props.setTerm({
+				searchTerm: this.state.searchTerm,
+				startYear: this.state.startYear,
+				endYear: this.state.endYear
+			});
 		},
 
 		// Here we render the function
@@ -19960,7 +19985,7 @@
 									"Topic"
 								)
 							),
-							React.createElement("input", { type: "text", className: "form-control text-center", id: "term", onChange: this.handleChange, required: true }),
+							React.createElement("input", { type: "text", className: "form-control text-center", id: "searchTerm", onChange: this.handleChangeTerm, required: true }),
 							React.createElement("br", null),
 							React.createElement(
 								"h4",
@@ -19971,7 +19996,7 @@
 									"Start Year"
 								)
 							),
-							React.createElement("input", { type: "text", className: "form-control text-center", id: "startYear", onChange: this.handleChange, required: true }),
+							React.createElement("input", { type: "text", className: "form-control text-center", id: "startYear", onChange: this.handleChangeStartYear, required: true }),
 							React.createElement("br", null),
 							React.createElement(
 								"h4",
@@ -19982,7 +20007,7 @@
 									"End Year"
 								)
 							),
-							React.createElement("input", { type: "text", className: "form-control text-center", id: "endYear", onChange: this.handleChange, required: true }),
+							React.createElement("input", { type: "text", className: "form-control text-center", id: "endYear", onChange: this.handleChangeEndYear, required: true }),
 							React.createElement("br", null),
 							React.createElement(
 								"button",
@@ -20105,7 +20130,7 @@
 	// Helper Functions (in this case the only one is runQuery)
 	var helpers = {
 
-		// This function serves our purpose of running the query to geolocate. 
+		// This function serves our purpose of running the query to searchNYT. 
 		runQuery: function runQuery(searchTerm, startYear, endYear) {
 
 			console.log(searchTerm);
@@ -20113,7 +20138,7 @@
 			//Figure out the geolocation
 
 			var authKey = "8f2a45ea5128489a94834b44f4c7ec93";
-			var queryURL = "https://api.nytimes.com/svc/search/v2/articlesearch.json?q=" + searchTerm + "&begin_date=" + startYear + "&end_date=" + endYear + "&api-key=" + authKey;
+			var queryURL = "https://api.nytimes.com/svc/search/v2/articlesearch.json?q=" + searchTerm.searchTerm + "&begin_date=" + searchTerm.startYear + "&end_date=" + searchTerm.endYear + "&api-key=" + authKey;
 			console.log(queryURL);
 			return axios.get(queryURL).then(function (response) {
 

@@ -24,9 +24,9 @@ var Main = React.createClass({
 	},	
 
 	// This function allows childrens to update the parent.
-	setTerm: function(term, startYear, endYear){
+	setTerm: function(searchTerm, startYear, endYear){
 		this.setState({
-			searchTerm: term,
+			searchTerm: searchTerm,
 			startYear: startYear,
 			endYear: endYear
 		})
@@ -37,9 +37,9 @@ var Main = React.createClass({
 
 		if(prevState.searchTerm != this.state.searchTerm){
 			console.log("UPDATED");
-
+			
 			// Run the query for the address
-			helpers.runQuery(this.state.searchTerm)
+			helpers.runQuery(this.state.searchTerm, this.state.startYear, this.state.endYear)
 				.then(function(data){
 					if (data != this.state.results)
 					{
