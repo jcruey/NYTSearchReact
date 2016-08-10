@@ -99,7 +99,7 @@ var Main = React.createClass({
 
 				<div className="row">
 
-					<div className="jumbotron bg-primary">
+					<div className="jumbotron">
 						<h2 className="text-center">New York Times Article Search</h2>
 						<p className="text-center"><em>Enter a search term to find articles written about that topic (ex: "Olympics").</em></p>
 					</div>

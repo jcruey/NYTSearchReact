@@ -15,7 +15,9 @@ var helpers = {
 		var authKey = "8f2a45ea5128489a94834b44f4c7ec93"
 		var queryURL = "https://api.nytimes.com/svc/search/v2/articlesearch.json?q=" + searchTerm.searchTerm + "&begin_date=" + searchTerm.startYear + "&end_date=" + searchTerm.endYear + "&api-key=" + authKey;
 		console.log(queryURL);
-		return axios.get(queryURL)
+		return new Promise(function(resolve, reject) {
+
+			axios.get(queryURL)
 			.then(function(response){
 				console.log(response);
 				var results =[];
@@ -26,10 +28,18 @@ var helpers = {
 						url: response.data.response.docs[i].web_url
 					})
 				}
-				console.log(results);
-		})
+					if (results.length != 0) {
+						console.log(results);
+						resolve(results);
+					} else {
+						reject(Error("error"));
+					}
+			});
 
+				
+		})
 	},
+
 
 	// This function hits our own server to retrieve the record of query results
 	getHistory: function(){
@@ -43,9 +53,9 @@ var helpers = {
 	},
 
 	// This function posts new searches to our database.
-	postHistory: function(location){
+	postHistory: function(data){
 
-		return axios.post('/api', {location: location})
+		return axios.post('/api', {results})
 			.then(function(results){
 
 				console.log("Posted to MongoDB");
@@ -53,7 +63,8 @@ var helpers = {
 			})
 	}
 
-}
+
+};
 
 
 // We export the helpers function 
