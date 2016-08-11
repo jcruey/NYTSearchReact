@@ -9,6 +9,7 @@ var Saved = React.createClass({
 
 		return(
 
+			<div className="col-md-12">
 			<div className="panel panel-default">
 				<div className="panel-heading">
 					<h3 className="panel-title text-center">Saved Articles</h3>
@@ -23,6 +24,7 @@ var Saved = React.createClass({
 					)}
 				</div>
 			</div>
+		</div>
 
 		)
 	}

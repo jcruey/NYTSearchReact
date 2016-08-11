@@ -20111,26 +20111,30 @@
 
 			return React.createElement(
 				"div",
-				{ className: "panel panel-default" },
+				{ className: "col-md-12" },
 				React.createElement(
 					"div",
-					{ className: "panel-heading" },
+					{ className: "panel panel-default" },
 					React.createElement(
-						"h3",
-						{ className: "panel-title text-center" },
-						"Saved Articles"
+						"div",
+						{ className: "panel-heading" },
+						React.createElement(
+							"h3",
+							{ className: "panel-title text-center" },
+							"Saved Articles"
+						)
+					),
+					React.createElement(
+						"div",
+						{ className: "panel-body text-center" },
+						this.props.saved.map(function (search, i) {
+							return React.createElement(
+								"p",
+								{ key: i },
+								search.title
+							);
+						})
 					)
-				),
-				React.createElement(
-					"div",
-					{ className: "panel-body text-center" },
-					this.props.saved.map(function (search, i) {
-						return React.createElement(
-							"p",
-							{ key: i },
-							search.title
-						);
-					})
 				)
 			);
 		}
