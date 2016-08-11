@@ -30,49 +30,40 @@ var Main = React.createClass({
 			startYear: startYear,
 			endYear: endYear
 		})
+		// call the function below in the helpers.js file		
+		helpers.runQuery(searchTerm, startYear, endYear)
+			.then(function(data) {
+				// set the state of nytdata to all the data returned from the ny times api so we can map through it and display it to the screen below
+				this.setState({results: data});
+
+		// .bind so we have this refering to the object returned
+		}.bind(this));
 	},
+
+	// // we will call this function form the component did mount and component did update functions below
+	// runQueryFromHelpers: function() {
+		
+	// 	// access helpers.js to use the getArticles function and access the get route defined in server.js
+	// 	helpers.runQuery()
+	// 		.then(function(response) {
+
+	// 			// set the state of articles with the articles stored in the database
+	// 			this.setState({
+	// 				articles: response.data
+	// 			})
+				
+	// 	}.bind(this)); // end helpers.getArticles()
+
+	// }, // end getArticlesFromHelpers()
 
 	// If the component changes (i.e. if a search is entered)... 
-	componentDidUpdate: function(prevProps, prevState){
+	componentDidUpdate: function(){
 
-		if(prevState.searchTerm != this.state.searchTerm){
-			console.log("UPDATED");
-			console.log()
-			// Run the query for the address
-			helpers.runQuery(this.state.searchTerm, this.state.startYear, this.state.endYear)
-				.then(function(data){
-					if (data != this.state.results)
-					{
-						console.log("Results", data);
+				// this is being called whenever a save article button is pressed in the search.js file
+		// this.getArticlesFromHelpers();
 
-						this.setState({
-							results: data
-						})
+	}, // end componentDidUpdate()
 
-						// After we've received the result... then post the search term to our history. 
-						helpers.postHistory(this.state.results)
-							.then(function(data){
-								console.log("Updated!");
-
-								// After we've done the post... then get the updated history
-								helpers.getHistory()
-									.then(function(response){
-										console.log("Saved Articles", response.data);
-										if (response != this.state.saved){
-											console.log ("Saved", response.data);
-
-											this.setState({
-												saved: response.data
-											})
-										}
-									}.bind(this))	
-							}.bind(this)
-						)
-					}
-				}.bind(this))
-				
-			}
-	},
 
 	// The moment the page renders get the History
 	componentDidMount: function(){
