@@ -41,27 +41,44 @@ var helpers = {
 	},
 
 
-	// This function hits our own server to retrieve the record of query results
-	getHistory: function(){
-
-		return axios.get('/api')
-			.then(function(response){
-
-				console.log(response);
-				return response;
-			});
-	},
-
 	// This function posts new searches to our database.
-	postHistory: function(data){
+	saveArticle: function(article){
 
-		return axios.post('/api', {results})
+		return axios.post('/api', article)
 			.then(function(results){
 
 				console.log("Posted to MongoDB");
-				return(results);
+				// return(results);
 			})
-	}
+	},
+
+	// get all the articles in the db
+	getArticles: function() {
+		
+		// using axios to access the get route defined in server.js and will return all the articles in our db
+		return axios.get('/api')
+			.then(function(response) {
+
+				// return response so we have access to it in main.js, which will then set the state and send it to saved.js
+				return response;
+
+		}); // end axios.get()
+
+	}, // end getArticles()
+
+	// delete the article from the db
+	deleteArticle: function(article_id) {
+		
+		// use axios to access the api/delete route. Needed to make this one different from the others as I couldn't get .delete to work so needed to use .post to remove from mongodb
+		return axios.post('/api/delete/', article_id)
+			.then(function(response) {
+
+				return response;
+
+			}); // end axios.post()
+
+	} // end deleteArticle()
+
 
 
 };

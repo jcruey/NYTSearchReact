@@ -21,7 +21,7 @@ app.use(express.static('./public'));
 
 // MongoDB Configuration configuration (Change this URL to your own DB)
 var databaseUrl = 'localDB';
-var collections = ["history"];
+var collections = ["NYTArticles"];
 
 // use mongojs to hook the database to the db variable 
 var db = mongojs(databaseUrl, collections);
@@ -38,38 +38,55 @@ app.get('/', function(req, res){
   res.sendFile('./public/index.html');
 })
 
-// This is the route we will send GET requests to retrieve our most recent search data.
-// We will call this route the moment our page gets rendered
+// get data from the db. The api route will be accessed by helpers.js
 app.get('/api/', function(req, res) {
 
-  // We will find all the records, sort it in descending order, then limit the records to 5
-  db.history.find({}).sort({date: -1}).limit(5, function(err, doc){
+  // grab all the articles in the database
+  db.NYTArticles.find({}).sort({pub_date: -1}, function(err, docs) {
 
-      if(err){
-        console.log(err);
-      }
-      else {
-        res.send(doc);
-      }
-    })
-});
+    if (err) throw err;
 
-// This is the route we will send POST requests to save each search.
-app.post('/api/', function(req, res){
-  console.log("BODY: " + req.body.headline);
+    console.log('getting the articles');
 
-  // Here we'll save the location based on the JSON input. 
-  // We'll use Date.now() to always get the current date time
-  db.history.insert({"title": req.body.headline, "url": req.body}, function(err){
-    if(err){
-      console.log(err);
-    }
-    else {
-      res.send("Saved Search");
-    }
-  })
-});
+    res.send(docs);
 
+  }); // end db.articles.find()
+
+}); // end app.get()
+
+// post data to the db. the api route will be accessed by helpers.js
+app.post('/api/', function(req, res) {
+
+  // save the article object which has the article title, url and publish date to the variable
+  var article = req.body;
+  console.log(article);
+  // insert the article into the db
+  db.NYTArticles.insert(article, function(err) {
+
+    if (err) throw err;
+
+    console.log('saved to db');
+
+  }); // end db.NYTArticles.insert()
+
+}); // end app.post()
+
+// delete data from the db. Wanted to use app.delete but couldn't. Not sure why.
+app.post('/api/delete/', function(req, res) {
+
+  // save the article object which has the article id to the variable
+  var article = req.body;
+
+  // had to use .remove() instead of .deleteOne() but not sure why.
+  db.NYTArticles.remove({"_id": (mongojs.ObjectId(article.article_id))}, function(err, docs) {
+    
+    if (err) throw err;
+
+    console.log('article deleted');
+
+  }); // end db.NYTArticles.remove()
+
+}); // end app.post()
 
 // -------------------------------------------------
 

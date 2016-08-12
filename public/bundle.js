@@ -19759,6 +19759,8 @@
 				startYear: "",
 				endYear: "",
 				results: "",
+				query: "",
+				deleted: {},
 				saved: [] /*Note how we added in this history state variable*/
 			};
 		},
@@ -19779,44 +19781,47 @@
 			}.bind(this));
 		},
 
-		// // we will call this function form the component did mount and component did update functions below
-		// runQueryFromHelpers: function() {
+		// we need this function so the child can update the parent that an article has been saved and can then call componentDidUpdate and pull that article into the saved section without refreshing the page
+		setArticles: function setArticles(article) {
 
-		// 	// access helpers.js to use the getArticles function and access the get route defined in server.js
-		// 	helpers.runQuery()
-		// 		.then(function(response) {
-
-		// 			// set the state of articles with the articles stored in the database
-		// 			this.setState({
-		// 				articles: response.data
-		// 			})
-
-		// 	}.bind(this)); // end helpers.getArticles()
-
-		// }, // end getArticlesFromHelpers()
-
-		// If the component changes (i.e. if a search is entered)... 
-		componentDidUpdate: function componentDidUpdate() {
-
-			// this is being called whenever a save article button is pressed in the search.js file
-			// this.getArticlesFromHelpers();
-
-		}, // end componentDidUpdate()
+			this.setState({
+				query: article.Title
+			});
+		}, // end setArticles()
 
 
-		// The moment the page renders get the History
+		// same as above in that we need this function to automatically display the items on the page with componentDidUpdate function
+		setDeleteArticles: function setDeleteArticles(deleted) {
+
+			this.setState({
+				deleted: deleted
+			});
+		}, // end setDeleteArticles()
+
+		// we will call this function form the component did mount and component did update functions below
+		getArticlesFromHelpers: function getArticlesFromHelpers() {
+
+			// access helpers.js to use the getArticles function and access the get route defined in server.js
+			helpers.getArticles().then(function (response) {
+				console.log(response);
+				// set the state of articles with the articles stored in the database
+				this.setState({
+					saved: response.data
+				});
+			}.bind(this)); // end helpers.getArticles()
+		}, // end getArticlesFromHelpers()
+
+		// componentDidUpdate: function() {
+
+		// 	// this is being called whenever a save article button is pressed in the search.js file
+		// 	this.getArticlesFromHelpers();
+
+		// }, // end componentDidUpdate()
+
+		// once the page loads get all the articles in the database
 		componentDidMount: function componentDidMount() {
 
-			// Get the latest history.
-			helpers.getHistory().then(function (response) {
-				if (response != this.state.saved) {
-					console.log("Saved", response.data);
-
-					this.setState({
-						saved: response.data
-					});
-				}
-			}.bind(this));
+			this.getArticlesFromHelpers();
 		},
 
 		// Here we render the function
@@ -20025,60 +20030,105 @@
 /* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
+
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 	// Include React 
 	var React = __webpack_require__(1);
+	var helpers = __webpack_require__(163);
 
 	// This is the results component
 	var Results = React.createClass({
-		displayName: "Results",
+		displayName: 'Results',
+
+
+		getInitialState: function getInitialState() {
+
+			return {
+				search_topic: '',
+				start_year: '',
+				end_year: '',
+				nytdata: []
+			};
+		}, // end getInitialState()
+
+		changedData: function changedData(event) {
+
+			// resetting the state each time the user changes something in any of the inputs by setting the id of the inputs to be the same as the key in the returned state object
+			this.setState(_defineProperty({}, event.target.id, event.target.value));
+		}, // end changedData
+
+		clickHandler: function clickHandler(event) {
+			console.log(event.target);
+			// set the state of the article we're saving
+			this.setState({
+				article: {
+					Title: event.target.getAttribute('data-title'),
+					pub_date: event.target.getAttribute('data-date'),
+					url: event.target.getAttribute('data-url')
+				}
+				// callback function so the state can update before we do anyting this that data
+			}, function () {
+				console.log(this.state.article);
+				// call the postArticle function and pass the article
+				helpers.saveArticle(this.state.article);
+
+				// need to call the setArticles function in main.js so that the newly saved articles to the database automatically show up in the saved section
+				// this.props.setArticles({
+				// 	article: {
+				// 		Title: this.state.article.Title
+				// 	}
+				// });
+			}); // end setState()
+		},
+		// end clickHandler()
+
 
 		// Here we render the function
 		render: function render() {
 			var NYTdata = this.props.results || [];
-			console.log(this.props.results);
+
 			return React.createElement(
-				"div",
-				{ className: "row" },
+				'div',
+				{ className: 'row' },
 				React.createElement(
-					"div",
-					{ className: "col-md-12" },
+					'div',
+					{ className: 'col-md-12' },
 					React.createElement(
-						"div",
-						{ className: "panel panel-default" },
+						'div',
+						{ className: 'panel panel-default' },
 						React.createElement(
-							"div",
-							{ className: "panel-heading" },
+							'div',
+							{ className: 'panel-heading' },
 							React.createElement(
-								"h3",
-								{ className: "panel-title text-center" },
-								"Results"
+								'h3',
+								{ className: 'panel-title text-center' },
+								'Results'
 							)
 						),
 						React.createElement(
-							"div",
-							{ className: "panel-body", onClick: this.clickHandler },
+							'div',
+							{ className: 'panel-body', onClick: this.clickHandler },
 							NYTdata.map(function (article, i) {
-
 								return React.createElement(
-									"p",
+									'p',
 									{ key: i },
 									React.createElement(
-										"a",
+										'a',
 										{ href: article.url },
 										article.Title
 									),
-									" ",
+									' ',
 									React.createElement(
-										"span",
+										'span',
 										null,
-										article.pub_date
+										article.pubDate
 									),
 									React.createElement(
-										"a",
-										{ href: "", className: "btn btn-primary" },
-										"Save"
+										'a',
+										{ className: 'btn btn-primary', 'data-title': article.Title, 'data-index': i, 'data-date': article.pubDate, 'data-url': article.url },
+										'Save'
 									)
 								);
 							})
@@ -20097,41 +20147,90 @@
 /* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	// Include React 
 	var React = __webpack_require__(1);
+	var helpers = __webpack_require__(163);
 
 	// This is the history component. It will be used to show a log of  recent searches.
 	var Saved = React.createClass({
-		displayName: "Saved",
+		displayName: 'Saved',
 
-		// Here we render the function
+
+		getInitialState: function getInitialState() {
+
+			return {
+				article_delete: ''
+			};
+		}, // end getInitialState()
+
+		clickHandler: function clickHandler(event) {
+
+			event.preventDefault();
+
+			// set the id of the article to delete to the article_id variable
+			var article_id = event.target.parentElement.children[0].id;
+
+			// set the state of the article_id we're deleting
+			this.setState({
+				article_delete: {
+					article_id: article_id
+				}
+				// callback function so the state can update before we do anyting this that data
+			}, function () {
+
+				// call the deleteArticle function and pass the article
+				helpers.deleteArticle(this.state.article_delete);
+
+				// this needs to be called in the callback or this function will run before deleteArticle and the screen won't remove the most recently deleted article without refreshing or clicking on another article to delete
+				// need to call the deleteArticles function in main.js so that the newly deleted article from the database automatically dissapears in the saved section
+				this.props.setDeleteArticles(this.state.article_delete);
+			}); // end setState()
+		},
+
+		// end clickHandler()
 		render: function render() {
 
 			return React.createElement(
-				"div",
-				{ className: "col-md-12" },
+				'div',
+				{ className: 'col-md-12' },
 				React.createElement(
-					"div",
-					{ className: "panel panel-default" },
+					'div',
+					{ className: 'panel panel-default' },
 					React.createElement(
-						"div",
-						{ className: "panel-heading" },
+						'div',
+						{ className: 'panel-heading' },
 						React.createElement(
-							"h3",
-							{ className: "panel-title text-center" },
-							"Saved Articles"
+							'h3',
+							{ className: 'panel-title text-center' },
+							'Saved Articles'
 						)
 					),
 					React.createElement(
-						"div",
-						{ className: "panel-body text-center" },
+						'div',
+						{ className: 'panel-body text-center', onClick: this.clickHandler },
 						this.props.saved.map(function (search, i) {
 							return React.createElement(
-								"p",
+								'p',
 								{ key: i },
-								search.title
+								React.createElement(
+									'a',
+									{ href: '', className: 'btn btn-danger', id: search._id },
+									'Delete'
+								),
+								' ',
+								React.createElement(
+									'a',
+									{ href: search.url },
+									search.Title
+								),
+								' ',
+								React.createElement(
+									'span',
+									null,
+									search.pub_date
+								)
 							);
 						})
 					)
@@ -20188,25 +20287,37 @@
 			});
 		},
 
-		// This function hits our own server to retrieve the record of query results
-		getHistory: function getHistory() {
+		// This function posts new searches to our database.
+		saveArticle: function saveArticle(article) {
 
-			return axios.get('/api').then(function (response) {
+			return axios.post('/api', article).then(function (results) {
 
-				console.log(response);
-				return response;
+				console.log("Posted to MongoDB");
+				// return(results);
 			});
 		},
 
-		// This function posts new searches to our database.
-		postHistory: function postHistory(data) {
+		// get all the articles in the db
+		getArticles: function getArticles() {
 
-			return axios.post('/api', { results: results }).then(function (results) {
+			// using axios to access the get route defined in server.js and will return all the articles in our db
+			return axios.get('/api').then(function (response) {
 
-				console.log("Posted to MongoDB");
-				return results;
-			});
-		}
+				// return response so we have access to it in main.js, which will then set the state and send it to saved.js
+				return response;
+			}); // end axios.get()
+		}, // end getArticles()
+
+		// delete the article from the db
+		deleteArticle: function deleteArticle(article_id) {
+
+			// use axios to access the api/delete route. Needed to make this one different from the others as I couldn't get .delete to work so needed to use .post to remove from mongodb
+			return axios.post('/api/delete/', article_id).then(function (response) {
+
+				return response;
+			}); // end axios.post()
+		} // end deleteArticle()
+
 
 	};
 

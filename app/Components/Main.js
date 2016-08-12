@@ -19,6 +19,8 @@ var Main = React.createClass({
 			startYear: "",
 			endYear: "", 
 			results: "",
+			query: "",
+			deleted: {},
 			saved: [] /*Note how we added in this history state variable*/
 		}
 	},	
@@ -40,45 +42,53 @@ var Main = React.createClass({
 		}.bind(this));
 	},
 
-	// // we will call this function form the component did mount and component did update functions below
-	// runQueryFromHelpers: function() {
+	// we need this function so the child can update the parent that an article has been saved and can then call componentDidUpdate and pull that article into the saved section without refreshing the page
+	setArticles: function(article) {
+
+		this.setState({
+			query: article.Title
+		});
+
+	}, // end setArticles()
+
+
+// same as above in that we need this function to automatically display the items on the page with componentDidUpdate function
+	setDeleteArticles: function(deleted) {
+
+		this.setState({
+			deleted: deleted
+		});
+
+	}, // end setDeleteArticles()
+
+	// we will call this function form the component did mount and component did update functions below
+	getArticlesFromHelpers: function() {
 		
-	// 	// access helpers.js to use the getArticles function and access the get route defined in server.js
-	// 	helpers.runQuery()
-	// 		.then(function(response) {
-
-	// 			// set the state of articles with the articles stored in the database
-	// 			this.setState({
-	// 				articles: response.data
-	// 			})
+		// access helpers.js to use the getArticles function and access the get route defined in server.js
+		helpers.getArticles()
+			.then(function(response) {
+				console.log(response);
+				// set the state of articles with the articles stored in the database
+				this.setState({
+					saved: response.data
+				})
 				
-	// 	}.bind(this)); // end helpers.getArticles()
+		}.bind(this)); // end helpers.getArticles()
 
-	// }, // end getArticlesFromHelpers()
+	}, // end getArticlesFromHelpers()
 
-	// If the component changes (i.e. if a search is entered)... 
-	componentDidUpdate: function(){
+	// componentDidUpdate: function() {
+		
+	// 	// this is being called whenever a save article button is pressed in the search.js file
+	// 	this.getArticlesFromHelpers();
 
-				// this is being called whenever a save article button is pressed in the search.js file
-		// this.getArticlesFromHelpers();
+	// }, // end componentDidUpdate()
 
-	}, // end componentDidUpdate()
+	// once the page loads get all the articles in the database
+	componentDidMount: function() {
+		
+		this.getArticlesFromHelpers();
 
-
-	// The moment the page renders get the History
-	componentDidMount: function(){
-
-		// Get the latest history.
-		helpers.getHistory()
-			.then(function(response){
-				if (response != this.state.saved){
-					console.log ("Saved", response.data);
-
-					this.setState({
-						saved: response.data
-					})
-				}
-			}.bind(this))
 	},
 
 	// Here we render the function
