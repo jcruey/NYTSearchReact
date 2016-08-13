@@ -20,7 +20,7 @@ app.use(express.static('./public'));
 // -------------------------------------------------
 
 // MongoDB Configuration configuration (Change this URL to your own DB)
-var databaseUrl = 'localDB';
+var databaseUrl = process.env.MONGODB_URI;
 var collections = ["NYTArticles"];
 
 // use mongojs to hook the database to the db variable 
